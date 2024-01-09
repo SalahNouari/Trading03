@@ -113,7 +113,12 @@ class LoadCSV:
 						else:
 								self.__dbtime = str(_minute) + "min"
 
+				self._pd['datetime'] = pd.to_datetime(self._pd['date'].astype(str) + ' ' + self._pd['time'].astype(str))
+				# self._pd.drop(['date', 'time'], axis=1, inplace=True)
+				# _pd['datetime'] = pd.Series(_pd['datetime'])
+				self._pd = self._pd.set_index('datetime')
 				print(f" Рабочий TimeFrame {self.__dbtime}")
+				print(self._pd.head())
 
 		def readCsvFilePd(self, _path):
 				_tr0 = pd.read_csv(_path, sep=";")
