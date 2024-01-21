@@ -10,14 +10,23 @@ if __name__=="__main__":
 		_connect_db = ConfigDbSing().get_config("dan")
 		pref_comp = _connect_db.connect_db["comp_pref"]
 
-		_lcsv = LCSV.LoadCSV(pathread = f'{pref_comp}Trading03\\Data\\CSV\\Sber\\1Hour',
-																								pathwrite = f'{_connect_db.path_not_git_data}\\Sber',
+		_lcsv = LCSV.LoadCSV(pathread = f'{pref_comp}Trading03\\Data\\CSV\\Gazp',
+																								pathwrite = f'{_connect_db.path_not_git_data}\\Gazp',
+																							 namefile = 'GAZP_19_22.csv',
 																								typedata = "pickle",
-																								name = 'Sber',
-																								nametime = 'candles1H')
+																								name = 'Gazp',
+																								nametime = 'candles1day')
 
 		_lcsv.Run()
 
-		var1 = LArc.LoadArchive.Picle(f"{_connect_db.path_not_git_data}\\Sber\\candles1H.pickle")
+		var1 = LArc.LoadArchive.Picle(f"{_connect_db.path_not_git_data}\\Gazp\\candles1day.pickle")
 		k=1
 
+		'''
+				_lcsv = LCSV.LoadCSV(pathread = f'{pref_comp}Trading03\\Data\\CSV\\Sber\\1Hour',
+																										pathwrite = f'{_connect_db.path_not_git_data}\\Sber',
+																										typedata = "pickle",
+																										name = 'Sber',
+																										nametime = 'candles1H')
+		
+		'''
