@@ -7,11 +7,8 @@ import datetime
 
 # The above could be sent to an independent module
 import backtrader as bt
-import backtrader.feeds as btfeeds
-import backtrader.indicators as btind
-from backtrader.analyzers import (SQN, AnnualReturn, TimeReturn, SharpeRatio, TradeAnalyzer)
+from backtrader import (SQN, AnnualReturn, TimeReturn, SharpeRatio, TradeAnalyzer)
 from TestModules.Strategies import ST_test_001  as st0
-import numpy as np
 import LoadArchive as LArc
 from ConfigDbSing import ConfigDbSing
 import pandas as pd

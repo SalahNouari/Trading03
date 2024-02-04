@@ -27,6 +27,14 @@ class LoadCSV:
 		class DbBase:
 				pass
 		def __init__(self, **params):
+				"""
+					PathDirRead 	- путь к каталогу исходным данных E:\\Trading03\\Data\\CSV\\Gazp',
+					PathDirWrite - путь к каталогу записи в каталог E:\\Trading03\\Data\\NotGit\\Gazp',
+					FileRead - имя файла (если читаем данные из одного файла) - 'GAZP_19_22.csv',
+					TypeData - тип сохраненных данных  pickle, numpy, pandas
+					NameInDb - записать название тикира в pickle - 'Gazp',
+					NameFileWrite - записать в файл 'candles1day')
+				"""
 				self._lsPath = []
 				self._pd = None
 				self._numpy = None
@@ -37,13 +45,19 @@ class LoadCSV:
 				self._IniciallParams(params)
 
 		def _IniciallParams(self, params):
-				self._pathCsvRead = params.get("pathread", "")
-				self._pathCsvWrite = params.get("pathwrite", "")
-				__typesave = params.get("typedata", "")
+				self._pathCsvRead = params.get("PathDirRead", "")
+				self._pathCsvWrite = params.get("PathDirWrite", "")
+				__typesave = params.get("TypeData", "")
 				self.__paramKey = TSave.Get(__typesave)
-				self.__name = params.get("name", "")
-				self.__nametime = params.get("nametime", "")
+				self.__nameInDb = params.get("NameInDb", "")
+				self.__nameFileWrite = params.get("NameFileWrite", "")
 				self.__dbTime = ""
+				self.__namefileread = params.get("FileRead", "")
+				if self.__namefileread != "" and self._pathCsvRead !="":
+					self.__pathnameOneFileread = self._pathCsvRead+"\\" + self.__namefileread
+				else:
+						self.__pathnameOneFileread=""
+
 
 				if not os.path.exists(self._pathCsvRead):
 						print(f" Ошибка нет каталога с исходными данными csv: - {self._pathCsvRead}")
@@ -54,9 +68,32 @@ class LoadCSV:
 
 				print(f" Тип данных для записи - {str(self.__paramKey.name)}")
 
+		def _saveToFile(self):
+				match self.__paramKey:
+						case TSave.pickle:
+								self.SavePicle()
+
+						case TSave.pandas:
+								print("---  pandas  ---- ")
+
+						case TSave.numpy:
+								self.SaveNumpy()
+
+						case _:
+								self.SavePicle()
+
 		def Run(self, params=None):
+				"""
+				Можно так же записать данные как в конструктор
+				"""
 				if None != params:
 						self._IniciallParams(params)
+
+				if os.path.isfile(self.__pathnameOneFileread):
+						self.readCsvFilePd(self.__pathnameOneFileread)
+						self._calcTimeFrame()
+						self._saveToFile()
+						return
 
 				if not os.path.exists(self._pathCsvWrite):
 						os.mkdir(self._pathCsvWrite)
@@ -72,18 +109,8 @@ class LoadCSV:
 
 				self._calcTimeFrame()
 
-				match self.__paramKey:
-						case TSave.pickle:
-								self.SavePicle()
+				self._saveToFile()
 
-						case TSave.pandas:
-								print("---  pandas  ---- ")
-
-						case TSave.numpy:
-								self.SaveNumpy()
-
-						case _:
-								self.SavePicle()
 
 		def _calcTimeFrame(self):
 				_dd0 = self._pd['date'].iloc[0]
@@ -113,16 +140,18 @@ class LoadCSV:
 						else:
 								self.__dbtime = str(_minute) + "min"
 
+				# 'datetime', 'open', 'high', 'low', 'close', 'volume', 'openinterest'
+
 				self._pd['datetime'] = pd.to_datetime(self._pd['date'].astype(str) + ' ' + self._pd['time'].astype(str))
-				# self._pd.drop(['date', 'time'], axis=1, inplace=True)
+				self._pd.drop(['date', 'time'], axis=1, inplace=True)
 				# _pd['datetime'] = pd.Series(_pd['datetime'])
 				self._pd = self._pd.set_index('datetime')
+				# self._pd.drop(['datetime'], axis=1, inplace=True)
 				print(f" Рабочий TimeFrame {self.__dbtime}")
 				print(self._pd.head())
 
 		def readCsvFilePd(self, _path):
 				_tr0 = pd.read_csv(_path, sep=";")
-
 				print(f" Данные из файла {_path} прочитанны ")
 
 				_tr0["<DATE>"] = pd.to_datetime(_tr0["<DATE>"].astype(str), yearfirst=True).dt.date
@@ -130,11 +159,14 @@ class LoadCSV:
 
 				_tr0.columns = ['date', 'time', 'open', 'high', 'low', 'close', 'volume']
 				self._pd = pd.concat([self._pd, _tr0], ignore_index=True)
-				kk=1
+
 		def SavePicle(self):
-				file = open(self._pathCsvWrite+"\\"+self.__nametime+".pickle", 'wb')
+				"""
+					Записываем в файл => pathwrite \\ nametime.pickle
+				"""
+				file = open(self._pathCsvWrite+"\\" + self.__nameFileWrite + ".pickle", 'wb')
 				data = LoadCSV.DbBase()
-				data.Name = self.__name
+				data.Name = self.__nameInDb
 				data.Pd = self._pd
 				data.DbTime = self.__dbtime
 				pickle.dump(data, file)

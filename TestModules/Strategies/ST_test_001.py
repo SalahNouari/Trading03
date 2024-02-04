@@ -1,10 +1,5 @@
-
-import datetime
 import backtrader as bt
-import backtrader.feeds as btfeeds
-import backtrader.indicators as btind
-from backtrader.analyzers import (SQN, AnnualReturn, TimeReturn, SharpeRatio,
-                                  TradeAnalyzer)
+import backtrader as btind
 
 
 class LongShortStrategy(bt.Strategy):

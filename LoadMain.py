@@ -10,12 +10,12 @@ if __name__=="__main__":
 		_connect_db = ConfigDbSing().get_config("dan")
 		pref_comp = _connect_db.connect_db["comp_pref"]
 
-		_lcsv = LCSV.LoadCSV(pathread = f'{pref_comp}Trading03\\Data\\CSV\\Gazp',
-																								pathwrite = f'{_connect_db.path_not_git_data}\\Gazp',
-																							 namefile = 'GAZP_19_22.csv',
-																								typedata = "pickle",
-																								name = 'Gazp',
-																								nametime = 'candles1day')
+		_lcsv = LCSV.LoadCSV(PathDirRead = f'{pref_comp}Trading03\\Data\\CSV\\Gazp',
+																								PathDirWrite = f'{_connect_db.path_not_git_data}\\Gazp',
+																							 FileRead = 'GAZP_19_22.csv',
+																								TypeData = "pickle",
+																								NameInDb = 'Gazp',
+																								NameFileWrite = 'candles1day')
 
 		_lcsv.Run()
 
